@@ -24,6 +24,8 @@ interface Note {
   class_name: string;
   subject: string;
   created_at: string;
+  file_url: string;
+  is_public: boolean;
 }
 
 const Profile = () => {
@@ -212,12 +214,17 @@ const Profile = () => {
                 <Card
                   key={note.id}
                   className="cursor-pointer hover:shadow-md transition-all hover:-translate-y-1"
-                  onClick={() => navigate(`/note/${note.id}`)}
+                  onClick={() => window.open(note.file_url, '_blank')}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
                       <FileText className="w-8 h-8 text-primary" />
-                      <Badge variant="secondary">{note.subject}</Badge>
+                      <div className="flex gap-2">
+                        <Badge variant="secondary">{note.subject}</Badge>
+                        <Badge variant={note.is_public ? "default" : "outline"}>
+                          {note.is_public ? "Public" : "Private"}
+                        </Badge>
+                      </div>
                     </div>
                     <CardTitle className="line-clamp-1">{note.title}</CardTitle>
                   </CardHeader>

@@ -166,6 +166,7 @@ export type Database = {
           file_size: number | null
           file_url: string
           id: string
+          is_public: boolean
           note_type: Database["public"]["Enums"]["note_type"] | null
           rating_count: number | null
           rating_sum: number | null
@@ -183,6 +184,7 @@ export type Database = {
           file_size?: number | null
           file_url: string
           id?: string
+          is_public?: boolean
           note_type?: Database["public"]["Enums"]["note_type"] | null
           rating_count?: number | null
           rating_sum?: number | null
@@ -200,6 +202,7 @@ export type Database = {
           file_size?: number | null
           file_url?: string
           id?: string
+          is_public?: boolean
           note_type?: Database["public"]["Enums"]["note_type"] | null
           rating_count?: number | null
           rating_sum?: number | null

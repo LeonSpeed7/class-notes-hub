@@ -21,6 +21,7 @@ interface Note {
   rating_count: number;
   created_at: string;
   file_url: string;
+  is_public: boolean;
   profiles: {
     username: string;
   };
