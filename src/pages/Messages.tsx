@@ -23,6 +23,7 @@ interface Message {
   message: string;
   created_at: string;
   sender_id: string;
+  receiver_id: string;
   read: boolean;
 }
 
@@ -96,24 +97,37 @@ const Messages = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedUser) {
+    if (selectedUser && currentUserId) {
       fetchMessages(selectedUser);
       markMessagesAsRead(selectedUser);
       
-      // Subscribe to realtime messages
+      // Subscribe to realtime messages from the selected user
       const channel = supabase
-        .channel(`private-messages-${selectedUser}`)
+        .channel(`private-messages-${selectedUser}-${currentUserId}`)
         .on(
           'postgres_changes',
           {
             event: 'INSERT',
             schema: 'public',
-            table: 'private_messages',
-            filter: `sender_id=eq.${selectedUser}`
+            table: 'private_messages'
           },
           (payload) => {
-            if (payload.new.receiver_id === currentUserId) {
-              setMessages(prev => [...prev, payload.new as Message]);
+            const newMsg = payload.new as Message;
+            // Only add if it's between current user and selected user
+            if (
+              (newMsg.sender_id === selectedUser && newMsg.receiver_id === currentUserId) ||
+              (newMsg.sender_id === currentUserId && newMsg.receiver_id === selectedUser)
+            ) {
+              setMessages(prev => {
+                // Avoid duplicates
+                if (prev.find(m => m.id === newMsg.id)) return prev;
+                return [...prev, newMsg];
+              });
+              
+              // Mark as read if it's from the selected user
+              if (newMsg.sender_id === selectedUser) {
+                markMessagesAsRead(selectedUser);
+              }
             }
           }
         )
@@ -223,23 +237,29 @@ const Messages = () => {
     if (!newMessage.trim() || !selectedUser || !currentUserId) return;
 
     setIsSending(true);
+    const messageText = newMessage.trim();
+    setNewMessage("");
+
     try {
-      const { error } = await supabase.from("private_messages").insert({
+      const { data, error } = await supabase.from("private_messages").insert({
         sender_id: currentUserId,
         receiver_id: selectedUser,
-        message: newMessage.trim(),
-      });
+        message: messageText,
+      }).select().single();
 
       if (error) throw error;
 
-      setNewMessage("");
-      fetchMessages(selectedUser);
+      // Add message to local state immediately
+      if (data) {
+        setMessages(prev => [...prev, data]);
+      }
     } catch (error: any) {
       toast({
         title: "Failed to send message",
         description: error.message,
         variant: "destructive",
       });
+      setNewMessage(messageText); // Restore message on error
     } finally {
       setIsSending(false);
     }
@@ -313,22 +333,36 @@ const Messages = () => {
     if (!newGlobalMessage.trim() || !currentUserId) return;
 
     setIsSending(true);
+    const messageText = newGlobalMessage.trim();
+    setNewGlobalMessage("");
+    setShowMentionDropdown(false);
+
     try {
-      const { error } = await supabase.from("global_chat_messages").insert({
-        user_id: currentUserId,
-        message: newGlobalMessage.trim(),
-      });
+      const { data, error } = await supabase
+        .from("global_chat_messages")
+        .insert({
+          user_id: currentUserId,
+          message: messageText,
+        })
+        .select(`
+          *,
+          profiles (
+            username
+          )
+        `)
+        .single();
 
       if (error) throw error;
 
-      setNewGlobalMessage("");
-      setShowMentionDropdown(false);
+      // Message will be added via realtime subscription
+      // No need to add to local state as realtime will handle it
     } catch (error: any) {
       toast({
         title: "Failed to send message",
         description: error.message,
         variant: "destructive",
       });
+      setNewGlobalMessage(messageText); // Restore message on error
     } finally {
       setIsSending(false);
     }
@@ -351,14 +385,58 @@ const Messages = () => {
         </TabsList>
 
         <TabsContent value="global" className="mt-0">
-          <Card className="h-[calc(100vh-16rem)] flex flex-col">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <Globe className="w-5 h-5 text-primary" />
-                <CardTitle>Global Chat</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-1 flex flex-col p-4">
+          <div className="grid gap-6 md:grid-cols-4 h-[calc(100vh-16rem)]">
+            {/* Users List Sidebar */}
+            <Card className="md:col-span-1">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-primary" />
+                  <CardTitle className="text-sm">Online Users</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[calc(100vh-20rem)]">
+                  {allUsers.length === 0 ? (
+                    <p className="text-center text-muted-foreground text-xs py-8">
+                      No other users
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {allUsers.map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent/50 transition-colors"
+                        >
+                          <Avatar className="w-8 h-8">
+                            <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                              {user.username.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{user.username}</p>
+                            {user.full_name && (
+                              <p className="text-xs text-muted-foreground truncate">
+                                {user.full_name}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+
+            {/* Global Chat */}
+            <Card className="md:col-span-3 flex flex-col">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-primary" />
+                  <CardTitle>Global Chat</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col p-4">
               <ScrollArea className="flex-1 pr-4 mb-4">
                 {globalMessages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center">
@@ -455,6 +533,7 @@ const Messages = () => {
               </div>
             </CardContent>
           </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="direct" className="mt-0">
