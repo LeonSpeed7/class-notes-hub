@@ -32,10 +32,11 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch all notes with ratings
+    // Fetch all public notes with ratings
     let query = supabase
       .from("notes")
-      .select("id, title, description, subject, class_name, rating_sum, rating_count, note_type")
+      .select("id, title, description, subject, class_name, rating_sum, rating_count, note_type, file_url")
+      .eq("is_public", true)
       .order("rating_count", { ascending: false })
       .limit(50);
 

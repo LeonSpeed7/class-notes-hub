@@ -20,6 +20,7 @@ const Upload = () => {
   const [className, setClassName] = useState("");
   const [subject, setSubject] = useState("");
   const [noteType, setNoteType] = useState<string>("other");
+  const [isPublic, setIsPublic] = useState(true);
   const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
@@ -86,6 +87,7 @@ const Upload = () => {
         file_url: publicUrl,
         file_name: file.name,
         file_size: file.size,
+        is_public: isPublic,
       } as any);
 
       if (insertError) throw insertError;
@@ -178,6 +180,19 @@ const Upload = () => {
                       <SelectItem value="project">Project</SelectItem>
                       <SelectItem value="study_guide">Study Guide</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="privacy">Privacy *</Label>
+                  <Select value={isPublic ? "public" : "private"} onValueChange={(value) => setIsPublic(value === "public")}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select privacy" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="public">Public - Visible to everyone in Browse</SelectItem>
+                      <SelectItem value="private">Private - Only visible to you</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

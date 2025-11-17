@@ -21,6 +21,7 @@ interface Note {
   rating_sum: number;
   rating_count: number;
   created_at: string;
+  is_public: boolean;
   profiles: {
     username: string;
     full_name: string;
@@ -98,6 +99,7 @@ const Browse = () => {
 
   const filteredNotes = notes.filter(
     (note) =>
+      note.is_public && // Only show public notes in Browse
       (note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.class_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.subject.toLowerCase().includes(searchQuery.toLowerCase())) &&
