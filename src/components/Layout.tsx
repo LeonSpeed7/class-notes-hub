@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
-import { Upload, User as UserIcon, GraduationCap, LogOut, MessageSquare, Sparkles } from "lucide-react";
+import { Upload, User as UserIcon, GraduationCap, LogOut, MessageSquare, Sparkles, BookOpen } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 
 interface LayoutProps {
@@ -46,7 +46,7 @@ const Layout = ({ children }: LayoutProps) => {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <button 
-              onClick={() => navigate('/')} 
+              onClick={() => navigate('/browse')} 
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
               <GraduationCap className="w-8 h-8 text-primary" />
@@ -54,6 +54,14 @@ const Layout = ({ children }: LayoutProps) => {
             </button>
             
             <div className="flex items-center gap-4">
+              <NavLink
+                to="/browse"
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent"
+                activeClassName="bg-accent text-accent-foreground"
+              >
+                <BookOpen className="w-4 h-4" />
+                Browse
+              </NavLink>
               <NavLink
                 to="/ai-recommendations"
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent"
@@ -79,7 +87,7 @@ const Layout = ({ children }: LayoutProps) => {
                 Messages
               </NavLink>
               <NavLink
-                to="/"
+                to="/profile"
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-accent"
                 activeClassName="bg-accent text-accent-foreground"
               >
