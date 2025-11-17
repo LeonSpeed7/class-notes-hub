@@ -198,6 +198,8 @@ const NoteDetail = () => {
   const handleRating = async (rating: number) => {
     if (!currentUserId) return;
 
+    const isUpdating = userRating > 0;
+
     try {
       const { error } = await supabase
         .from("note_ratings")
@@ -213,15 +215,25 @@ const NoteDetail = () => {
       fetchNote();
       
       toast({
-        title: "Rating submitted",
-        description: "Thank you for your feedback!",
+        title: isUpdating ? "Rating updated" : "Rating submitted",
+        description: isUpdating 
+          ? "Your rating has been updated successfully!" 
+          : "Thank you for your feedback!",
       });
     } catch (error: any) {
-      toast({
-        title: "Failed to submit rating",
-        description: error.message,
-        variant: "destructive",
-      });
+      // Check if it's a duplicate rating attempt
+      if (error.message?.includes("duplicate") || error.code === "23505") {
+        toast({
+          title: "Already rated",
+          description: "You've already rated this note. Try refreshing the page to update your rating.",
+        });
+      } else {
+        toast({
+          title: "Unable to submit rating",
+          description: "Please try again in a moment.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
