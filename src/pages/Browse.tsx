@@ -14,6 +14,7 @@ interface Note {
   title: string;
   description: string;
   class_name: string;
+  class_id: string | null;
   subject: string;
   file_name: string;
   file_url: string;
@@ -28,15 +29,24 @@ interface Note {
   };
 }
 
+interface Class {
+  id: string;
+  name: string;
+  code: string;
+}
+
 const Browse = () => {
   const navigate = useNavigate();
   const [notes, setNotes] = useState<Note[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [noteTypeFilter, setNoteTypeFilter] = useState<string>("all");
+  const [classFilter, setClassFilter] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchNotes();
+    fetchClasses();
 
     // Subscribe to realtime changes
     const channel = supabase
@@ -97,13 +107,28 @@ const Browse = () => {
     }
   };
 
+  const fetchClasses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("classes")
+        .select("*")
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+      setClasses(data || []);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
+
   const filteredNotes = notes.filter(
     (note) =>
       note.is_public && // Only show public notes in Browse
       (note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.class_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.subject.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (noteTypeFilter === "all" || note.note_type === noteTypeFilter)
+      (noteTypeFilter === "all" || note.note_type === noteTypeFilter) &&
+      (classFilter === "all" || note.class_id === classFilter)
   );
 
   const getAverageRating = (note: Note) => {
@@ -121,8 +146,8 @@ const Browse = () => {
           </p>
         </div>
 
-        <div className="flex gap-4">
-          <div className="relative flex-1">
+        <div className="flex gap-4 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by title, class, or subject..."
@@ -132,8 +157,22 @@ const Browse = () => {
             />
           </div>
           
+          <Select value={classFilter} onValueChange={setClassFilter}>
+            <SelectTrigger className="w-[220px]">
+              <SelectValue placeholder="Filter by class" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Classes</SelectItem>
+              {classes.map((cls) => (
+                <SelectItem key={cls.id} value={cls.id}>
+                  {cls.code} - {cls.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Select value={noteTypeFilter} onValueChange={setNoteTypeFilter}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
