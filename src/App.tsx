@@ -3,10 +3,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Upload from "./pages/Upload";
 import UploadSuccess from "./pages/UploadSuccess";
 import Profile from "./pages/Profile";
+import Browse from "./pages/Browse";
 import UserProfile from "./pages/UserProfile";
 import Messages from "./pages/Messages";
 import AIRecommendations from "./pages/AIRecommendations";
@@ -22,8 +24,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Profile />} />
+          <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/browse" element={<Browse />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/upload-success" element={<UploadSuccess />} />
           <Route path="/profile/:userId" element={<UserProfile />} />
