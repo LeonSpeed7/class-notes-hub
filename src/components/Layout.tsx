@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
 import { Upload, User as UserIcon, GraduationCap, LogOut, MessageSquare, Sparkles, BookOpen } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface LayoutProps {
   children: ReactNode;
@@ -94,6 +95,7 @@ const Layout = ({ children }: LayoutProps) => {
                 <UserIcon className="w-4 h-4" />
                 My Notes
               </NavLink>
+              <ThemeToggle />
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="w-4 h-4" />
               </Button>
