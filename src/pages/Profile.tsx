@@ -22,6 +22,7 @@ interface Note {
   id: string;
   title: string;
   class_name: string;
+  class_id: string | null;
   subject: string;
   created_at: string;
   file_url: string;

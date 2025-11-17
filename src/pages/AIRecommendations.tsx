@@ -15,6 +15,7 @@ interface Note {
   title: string;
   description: string;
   class_name: string;
+  class_id: string | null;
   subject: string;
   note_type: string;
   rating_sum: number;
