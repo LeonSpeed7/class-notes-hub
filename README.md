@@ -1,3 +1,4 @@
+# StudyShare
 
 ## Inspiration
 Every student has faced the night-before-test panic, staring at incomplete notes and wishing for access to organized explanations. We realized that schools have vast academic knowledge but no central, safe place to share notes, summaries, and study guides. Our idea stemmed from one question: What if technology and AI could create a collaborative studying community?
