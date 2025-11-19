@@ -10,17 +10,17 @@ Private and public chats to communicate one-on-one or join broader school commun
 Detailed user profiles showcasing bios and note contributions.
 AI-powered recommendations that analyze content and ratings to suggest the top 3 most relevant notes for a lesson.
 School affiliation for prioritizing notes and enabling connections within the same school.
-Other features
-dark/light mode
-profile editing
-search filters
-multiple note types (lecture, lab, etc.).
+Other features:
+- dark/light mode
+- profile editing
+- search filters
+- multiple note types (lecture, lab, etc.).
+
 ## How we built it
-We iterated on several design ideas before building the platform using the AI-powered Lovable development platform and integrating the Gemini 2.5 API into our database. These tools allowed us to create a scalable, dynamic product that would have been difficult with traditional development alone.
+We explored multiple design iterations before developing the platform using the AI-powered Lovable environment and integrating the Gemini 2.5 API directly into our database. Together, these tools enabled us to build a scalable, responsive system that would have been far more complex and time-consuming to create through traditional development methods.
 
 ## Challenges we ran into
-One problem we ran into was allowing people on our website to contact and message each other. We solved this by changing the way users and messages were stored. We also had a problem with allowing all students on the website to access someone’s file uploads into the website. We fixed this by creating a ‘private’ and ‘public’ setting for each file with only public files being accessible to other users.
-
+One major challenge was enabling users to contact and message each other reliably. We resolved this by restructuring how user data and messages were stored. Another issue involved ensuring students could access uploaded files; we addressed this by adding ‘private’ and ‘public’ visibility settings, allowing only public files to be accessible across the platform.
 
 ## Accomplishments that we're proud of
 We are proud of our prompt engineering with Lovable, allowing us to incorporate multiple features into a usable platform. Removing the browse section and replacing it with an AI notes recommender solved major storage and accessibility issues, a breakthrough for our workflow. 
@@ -33,8 +33,8 @@ We envision StudyShare as an open-source notes platform like GitHub or NextDoor 
 
 ## Coming soon (Bonus)
 We want to add the following features in the future:
-An about us page explaining what our website is used for
-Contact us/help section for users having trouble navigating our website
-Send feedback at the bottom on what features/improvements we could make
-A tooltip for when a user hovers over a section to provide basic details about it
+- An about us page explaining what our website is used for
+- Contact us/help section for users having trouble navigating our website
+- Send feedback at the bottom on what features/improvements we could make
+- A tooltip for when a user hovers over a section to provide basic details about it
 
